@@ -49,7 +49,7 @@ app.get("*", (req, res) => {
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
-const port = process.env.Port;
+const port = process.env.PORT || 5000;
 
 // connectDB means mongoose connect returns promise
 // So we have to use async await
