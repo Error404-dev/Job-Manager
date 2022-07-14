@@ -1,12 +1,9 @@
 import {
   DISPLAY_ALERT,
   CLEAR_ALERT,
-  REGISTER_USER_BEGIN,
-  REGISTER_USER_SUCCESS,
-  REGISTER_USER_ERROR,
-  LOGIN_USER_BEGIN,
-  LOGIN_USER_SUCCESS,
-  LOGIN_USER_ERROR,
+  SETUP_USER_BEGIN,
+  SETUP_USER_SUCCESS,
+  SETUP_USER_ERROR,
   TOGGLE_SIDEBAR,
   LOGOUT_USER,
   UPDATE_USER_BEGIN,
@@ -49,49 +46,24 @@ const reducer = (state, action) => {
       alertText: "",
     };
   }
-  if (action.type === REGISTER_USER_BEGIN) {
-    return { ...state, isLoading: true };
-  }
-  if (action.type === REGISTER_USER_SUCCESS) {
-    return {
-      ...state,
-      isLoading: false,
-      token: action.payload.token,
-      user: action.payload.user,
-      userLocation: action.payload.userLocation,
-      jobLocation: action.payload.jobLocation,
-      showAlert: true,
-      alertType: "success",
-      alertText: "User created! Redirecting....",
-    };
-  }
-  if (action.type === REGISTER_USER_ERROR) {
-    return {
-      ...state,
-      isLoading: false,
-      showAlert: true,
-      alertType: "danger",
-      alertText: action.payload.msg,
-    };
-  }
 
-  if (action.type === LOGIN_USER_BEGIN) {
+  if (action.type === SETUP_USER_BEGIN) {
     return { ...state, isLoading: true };
   }
-  if (action.type === LOGIN_USER_SUCCESS) {
+  if (action.type === SETUP_USER_SUCCESS) {
     return {
       ...state,
-      isLoading: false,
+      isLoading: true,
       token: action.payload.token,
       user: action.payload.user,
-      userLocation: action.payload.userLocation,
-      jobLocation: action.payload.jobLocation,
+      userLocation: action.payload.location,
+      jobLocation: action.payload.location,
       showAlert: true,
       alertType: "success",
-      alertText: "Login Successful! Redirecting....",
+      alertText: action.payload.alertText,
     };
   }
-  if (action.type === LOGIN_USER_ERROR) {
+  if (action.type === SETUP_USER_ERROR) {
     return {
       ...state,
       isLoading: false,
@@ -108,15 +80,13 @@ const reducer = (state, action) => {
   }
   if (action.type === LOGOUT_USER) {
     return {
-      ...initialState, //Don't want to return current values and update few of them instead return empty object(initialState) All values set to initial once we logout that's why return initialState
+      ...initialState,
       user: null,
       token: null,
       jobLocation: "",
       userLocation: "",
-      //But above 4 values we have to explicitly overwrite these values bcoz removing from localStorage doesn't automatically update these values
     };
   }
-
   if (action.type === UPDATE_USER_BEGIN) {
     return { ...state, isLoading: true };
   }
@@ -126,8 +96,8 @@ const reducer = (state, action) => {
       isLoading: false,
       token: action.payload.token,
       user: action.payload.user,
-      userLocation: action.payload.userLocation,
-      jobLocation: action.payload.jobLocation,
+      userLocation: action.payload.location,
+      jobLocation: action.payload.location,
       showAlert: true,
       alertType: "success",
       alertText: "User Profile Updated!",
@@ -142,7 +112,6 @@ const reducer = (state, action) => {
       alertText: action.payload.msg,
     };
   }
-
   if (action.type === HANDLE_CHANGE) {
     return {
       ...state,
@@ -150,7 +119,6 @@ const reducer = (state, action) => {
       [action.payload.name]: action.payload.value,
     };
   }
-
   if (action.type === CLEAR_VALUES) {
     const initialState = {
       isEditing: false,
@@ -161,12 +129,12 @@ const reducer = (state, action) => {
       jobType: "full-time",
       status: "pending",
     };
+
     return {
       ...state,
       ...initialState,
     };
   }
-
   if (action.type === CREATE_JOB_BEGIN) {
     return { ...state, isLoading: true };
   }
@@ -180,7 +148,6 @@ const reducer = (state, action) => {
       alertText: "New Job Created!",
     };
   }
-
   if (action.type === CREATE_JOB_ERROR) {
     return {
       ...state,
@@ -190,11 +157,9 @@ const reducer = (state, action) => {
       alertText: action.payload.msg,
     };
   }
-
   if (action.type === GET_JOBS_BEGIN) {
     return { ...state, isLoading: true, showAlert: false };
   }
-
   if (action.type === GET_JOBS_SUCCESS) {
     return {
       ...state,
@@ -204,7 +169,6 @@ const reducer = (state, action) => {
       numOfPages: action.payload.numOfPages,
     };
   }
-
   if (action.type === SET_EDIT_JOB) {
     const job = state.jobs.find((job) => job._id === action.payload.id);
     const { _id, position, company, jobLocation, jobType, status } = job;
@@ -219,15 +183,15 @@ const reducer = (state, action) => {
       status,
     };
   }
-
   if (action.type === DELETE_JOB_BEGIN) {
     return { ...state, isLoading: true };
   }
-
   if (action.type === EDIT_JOB_BEGIN) {
-    return { ...state, isLoading: true };
+    return {
+      ...state,
+      isLoading: true,
+    };
   }
-
   if (action.type === EDIT_JOB_SUCCESS) {
     return {
       ...state,
@@ -246,11 +210,13 @@ const reducer = (state, action) => {
       alertText: action.payload.msg,
     };
   }
-
   if (action.type === SHOW_STATS_BEGIN) {
-    return { ...state, isLoading: true, showAlert: false };
+    return {
+      ...state,
+      isLoading: true,
+      showAlert: false,
+    };
   }
-
   if (action.type === SHOW_STATS_SUCCESS) {
     return {
       ...state,
@@ -259,7 +225,6 @@ const reducer = (state, action) => {
       monthlyApplications: action.payload.monthlyApplications,
     };
   }
-
   if (action.type === CLEAR_FILTERS) {
     return {
       ...state,
@@ -269,14 +234,9 @@ const reducer = (state, action) => {
       sort: "latest",
     };
   }
-
   if (action.type === CHANGE_PAGE) {
-    return {
-      ...state,
-      page: action.payload.page,
-    };
+    return { ...state, page: action.payload.page };
   }
-
   throw new Error(`no such action : ${action.type}`);
 };
 
